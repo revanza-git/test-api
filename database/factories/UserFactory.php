@@ -34,6 +34,10 @@ class UserFactory extends Factory
 
     /**
      * Indicate that the model's email address should be unverified.
+     *
+     * Note: This project does not implement email verification (no `email_verified_at` column),
+     * so this state is intentionally a no-op and kept only for compatibility with the default
+     * Laravel factory API.
      */
     public function unverified(): static
     {
