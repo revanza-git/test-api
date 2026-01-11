@@ -52,12 +52,13 @@ php artisan test
 
 ---
 
-## Docker (app + nginx + mysql)
+## Docker (app + nginx + mysql + mailhog)
 
 This repository includes Docker Compose services for:
 - `mysql` (MySQL 8.4)
 - `app` (PHP-FPM running Laravel)
 - `nginx` (reverse proxy serving `public/` and forwarding PHP to `app:9000`)
+- `mailhog` (local SMTP server + web UI)
 
 > Note: By default this repo forwards MySQL to **host port 3307** via `FORWARD_DB_PORT` in `.env.example`
 > to avoid clashes with an existing local MySQL on 3306.
@@ -114,6 +115,11 @@ This repo uses **MailHog** for local SMTP testing.
 When you create a user via `POST /api/users`, the app sends:
 1) an email to the new user (account created)
 2) an email to the system admin (`MAIL_ADMIN_ADDRESS` / `config('mail.admin_address')`)
+
+Implementation note:
+- The controller stays thin; these emails are dispatched via an event/listener:
+  - Event: `App\Events\UserCreated`
+  - Listener: `App\Listeners\SendUserCreatedEmails`
 
 After calling the create user endpoint, open MailHog UI and you should see both messages.
 
