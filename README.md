@@ -143,11 +143,15 @@ This repo includes an Artisan helper command:
 
 ```bash
 # token name defaults to "local"
-php artisan app:create-sanctum-token test@example.com
+docker compose exec app php artisan app:create-sanctum-token test@example.com
 
 # optional token name
-php artisan app:create-sanctum-token test@example.com --name=demo
+docker compose exec app php artisan app:create-sanctum-token test@example.com --name=demo
 ```
+
+> Note: If you run `php artisan ...` on your host machine while your `.env` has `DB_HOST=mysql`, you may see:
+> `getaddrinfo for mysql failed`.
+> The hostname `mysql` is a Docker Compose service name and is only resolvable **inside** the Docker network.
 
 The command prints the **plain text token**. Use it as a Bearer token:
 
