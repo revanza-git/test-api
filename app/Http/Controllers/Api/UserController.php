@@ -5,13 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
-use App\Mail\AccountCreatedMail;
-use App\Mail\NewUserAdminNotificationMail;
+use App\Events\UserCreated;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -22,13 +20,8 @@ class UserController extends Controller
 
         $user = User::query()->create($data);
 
-        // Spec requirement: send two emails on account creation (synchronously).
-        Mail::to($user->email)->send(new AccountCreatedMail($user));
-
-        $adminAddress = config('mail.admin_address');
-        if (is_string($adminAddress) && $adminAddress !== '') {
-            Mail::to($adminAddress)->send(new NewUserAdminNotificationMail($user));
-        }
+        // Side-effects are handled via events/listeners to keep controllers thin.
+        event(new UserCreated($user));
 
         return response()->json([
             'id' => $user->id,
