@@ -1,0 +1,4 @@
+CREATE DATABASE IF NOT EXISTS `testing`;
+GRANT ALL PRIVILEGES ON `testing`.* TO 'test_api'@'%';
+FLUSH PRIVILEGES;
+
